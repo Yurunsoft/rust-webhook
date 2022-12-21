@@ -95,9 +95,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: rust-webhook-${{ matrix.target }}.zip
+          file: rust-webhook-${{ matrix.config.target }}.zip
           mime: application/octet-stream
-          name: rust-webhook-${{ matrix.target }}.zip
+          name: rust-webhook-${{ matrix.config.target }}.zip
 
   build-macos:
     name: Build Macos ${{ matrix.target }}
