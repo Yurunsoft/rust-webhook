@@ -31,6 +31,6 @@ pub struct ConfigSite {
 
 pub fn get_config() -> Config {
     let file_path = Path::new(&env::current_dir().unwrap().to_str().unwrap()).join("config.json");
-    let config: Config = serde_json::from_slice(&fs::read(file_path).unwrap()).unwrap();
+    let config: Config = json5::from_str(&fs::read_to_string(file_path).unwrap()).unwrap();
     return config;
 }

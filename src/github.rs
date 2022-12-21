@@ -16,7 +16,7 @@ struct GithubRequestDataRepository {
 pub async fn route_github(context: &mut Context) -> Result<(), hyper::Error> {
     let body_bytes: Vec<u8> = hyper::body::to_bytes(context.request.body_mut()).await?.into_iter().collect();
 
-    let data: GithubRequest = serde_json::from_str(&String::from_utf8(body_bytes.clone()).expect("")).unwrap();
+    let data: GithubRequest = json5::from_str(&String::from_utf8(body_bytes.clone()).expect("")).unwrap();
 
     let x_github_event = context.request.headers().get("x-github-event").unwrap().to_str().unwrap().to_string();
     let x_hub_signature_256 = context.request.headers().get("x-hub-signature-256").unwrap().to_str().unwrap().to_string();

@@ -18,7 +18,7 @@ struct GiteeRequestProject {
 pub async fn route_gitee(context: &mut Context) -> Result<(), hyper::Error> {
     let body_bytes = hyper::body::to_bytes(context.request.body_mut()).await?;
 
-    let data: GiteeRequest = serde_json::from_str(&String::from_utf8(body_bytes.into_iter().collect()).expect("")).unwrap();
+    let data: GiteeRequest = json5::from_str(&String::from_utf8(body_bytes.into_iter().collect()).expect("")).unwrap();
 
     tokio::spawn(async move {
         let config = get_config();

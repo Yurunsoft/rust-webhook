@@ -1,7 +1,6 @@
 use std::env;
 use std::fs;
 use std::path::Path;
-use std::process::exit;
 
 fn main() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
