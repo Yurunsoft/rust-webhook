@@ -67,8 +67,8 @@ jobs:
           - target: "x86_64-unknown-linux-musl"
             apt_install: ""
           - target: "aarch64-unknown-linux-musl"
-            apt_install: ""
-            linker: ""
+            apt_install: "gcc-aarch64-linux-gnu"
+            linker: "aarch64-linux-gnu-gcc"
 
     env:
       TARGET: ${{ matrix.config.target }}
