@@ -1,0 +1,134 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-windows-x86:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Prepare
+        run: |
+          echo "[target.i686-pc-windows-msvc]" >> ~/.cargo/config
+          echo "rustflags = [""-C"", ""target-feature=+crt-static""]" >> ~/.cargo/config
+          &"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+
+      - name: Build
+        run: cargo build --release --target=i686-pc-windows-msvc -vv
+
+      - name: Pack
+        run: 7z a -mmt -mx9 rust-webhook-windows-x86.zip target/i686-pc-windows-msvc/release/rust-webhook.exe target/i686-pc-windows-msvc/release/config.json LICENSE
+
+      - name: Deploy
+        uses: WebFreak001/upload-asset@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: rust-webhook-i686-pc-windows-msvc.zip
+          mime: application/octet-stream
+          name: rust-webhook-i686-pc-windows-msvc.zip
+
+  build-windows-x64:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build
+        run: cargo build --release -vv
+
+      - name: Pack
+        run: 7z a -mmt -mx9 rust-webhook-windows-x64.zip target/release/rust-webhook.exe target/release/config.json LICENSE
+
+      - name: Deploy
+        uses: WebFreak001/upload-asset@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: rust-webhook-x86_64-pc-windows-msvc.zip
+          mime: application/octet-stream
+          name: rust-webhook-x86_64-pc-windows-msvc.zip
+
+  build-linux:
+    name: Build Linux ${{ matrix.config.target }}
+
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - target: "i686-unknown-linux-gnu"
+            apt_install: "libc6-dev-i386"
+          - target: "x86_64-unknown-linux-gnu"
+            apt_install: ""
+          - target: "aarch64-unknown-linux-gnu"
+            apt_install: "gcc-aarch64-linux-gnu"
+            linker: "aarch64-linux-gnu-gcc"
+
+    env:
+      TARGET: ${{ matrix.config.target }}
+      APT_INSTALL: ${{ matrix.config.apt_install }}
+      LINKER: ${{ matrix.config.linker }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Prepare
+        run: |
+          if [ $APT_INSTALL ]; then sudo apt update && sudo apt install -y $APT_INSTALL; fi
+          if [ $LINKER ]; then echo "[target.$TARGET]" >> ~/.cargo/config; echo "linker = \"$LINKER\"" >> ~/.cargo/config; fi
+          rustup target add $TARGET
+
+      - name: Build
+        run: cargo build --release --target=$TARGET -vv
+
+      - name: Pack
+        run: 7z a -mmt -mx9 rust-webhook-linux-x86.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
+
+      - name: Deploy
+        uses: WebFreak001/upload-asset@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: rust-webhook-$TARGET.zip
+          mime: application/octet-stream
+          name: rust-webhook-$TARGET.zip
+
+  build-macos:
+    name: Build Macos ${{ matrix.target }}
+
+    runs-on: macos-12
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["x86_64-apple-darwin", "aarch64-apple-darwin"]
+
+    env:
+      TARGET: ${{ matrix.target }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Prepare
+        run: rustup target add $TARGET
+
+      - name: Build
+        run: cargo build --release --target=$TARGET -vv
+
+      - name: Pack
+        run: 7z a -mmt -mx9 rust-webhook-$TARGET.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
+
+      - name: Deploy
+        uses: WebFreak001/upload-asset@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: rust-webhook-$TARGET.zip
+          mime: application/octet-stream
+          name: rust-webhook-$TARGET.zip
