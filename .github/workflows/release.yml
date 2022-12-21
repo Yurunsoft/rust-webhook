@@ -64,11 +64,11 @@ jobs:
         config:
           - target: "i686-unknown-linux-gnu"
             apt_install: "libc6-dev-i386"
-          - target: "x86_64-unknown-linux-gnu"
+          - target: "x86_64-unknown-linux-musl"
             apt_install: ""
-          - target: "aarch64-unknown-linux-gnu"
-            apt_install: "gcc-aarch64-linux-gnu"
-            linker: "aarch64-linux-gnu-gcc"
+          - target: "aarch64-unknown-linux-aarch64-linux-gnu-gcc"
+            apt_install: ""
+            linker: ""
 
     env:
       TARGET: ${{ matrix.config.target }}
