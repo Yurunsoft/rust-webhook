@@ -88,7 +88,7 @@ jobs:
         run: cargo build --release --target=$TARGET -vv
 
       - name: Pack
-        run: 7z a -mmt -mx9 rust-webhook-${{ matrix.target }}.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
+        run: 7z a -mmt -mx9 rust-webhook-${{ matrix.config.target }}.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
 
       - name: Deploy
         uses: WebFreak001/upload-asset@v1.0.0
