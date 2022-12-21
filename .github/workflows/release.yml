@@ -21,7 +21,7 @@ jobs:
         run: cargo build --release --target=i686-pc-windows-msvc -vv
 
       - name: Pack
-        run: 7z a -mmt -mx9 rust-webhook-windows-x86.zip target/i686-pc-windows-msvc/release/rust-webhook.exe target/i686-pc-windows-msvc/release/config.json LICENSE
+        run: 7z a -mmt -mx9 rust-webhook-i686-pc-windows-msvc.zip target/i686-pc-windows-msvc/release/rust-webhook.exe target/i686-pc-windows-msvc/release/config.json LICENSE
 
       - name: Deploy
         uses: WebFreak001/upload-asset@v1.0.0
@@ -42,7 +42,7 @@ jobs:
         run: cargo build --release -vv
 
       - name: Pack
-        run: 7z a -mmt -mx9 rust-webhook-windows-x64.zip target/release/rust-webhook.exe target/release/config.json LICENSE
+        run: 7z a -mmt -mx9 rust-webhook-x86_64-pc-windows-msvc.zip target/release/rust-webhook.exe target/release/config.json LICENSE
 
       - name: Deploy
         uses: WebFreak001/upload-asset@v1.0.0
@@ -88,16 +88,16 @@ jobs:
         run: cargo build --release --target=$TARGET -vv
 
       - name: Pack
-        run: 7z a -mmt -mx9 rust-webhook-linux-x86.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
+        run: 7z a -mmt -mx9 rust-webhook-${{ matrix.target }}.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
 
       - name: Deploy
         uses: WebFreak001/upload-asset@v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: rust-webhook-$TARGET.zip
+          file: rust-webhook-${{ matrix.target }}.zip
           mime: application/octet-stream
-          name: rust-webhook-$TARGET.zip
+          name: rust-webhook-${{ matrix.target }}.zip
 
   build-macos:
     name: Build Macos ${{ matrix.target }}
@@ -122,13 +122,13 @@ jobs:
         run: cargo build --release --target=$TARGET -vv
 
       - name: Pack
-        run: 7z a -mmt -mx9 rust-webhook-$TARGET.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
+        run: 7z a -mmt -mx9 rust-webhook-${{ matrix.target }}.zip target/$TARGET/release/rust-webhook target/$TARGET/release/config.json LICENSE
 
       - name: Deploy
         uses: WebFreak001/upload-asset@v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: rust-webhook-$TARGET.zip
+          file: rust-webhook-${{ matrix.target }}.zip
           mime: application/octet-stream
-          name: rust-webhook-$TARGET.zip
+          name: rust-webhook-${{ matrix.target }}.zip
