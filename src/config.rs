@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{env, fs, path::Path};
+use std::{fs, path::Path};
 
 use crate::util::current_dir;
 
