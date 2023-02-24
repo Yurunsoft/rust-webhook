@@ -6,7 +6,7 @@ use crate::{config::get_config, route::Context, util::shell_exec};
 struct GiteeRequest {
     password: String,
     hook_name: String,
-    #[serde(rename="ref")]
+    #[serde(rename = "ref")]
     _ref: String,
     project: GiteeRequestProject,
 }
@@ -15,13 +15,14 @@ struct GiteeRequestProject {
     path_with_namespace: String,
 }
 
-pub async fn route_gitee(context: &mut Context) -> Result<(), hyper::Error> {
+pub async fn route_gitee(context: &mut Context) -> anyhow::Result<()> {
     let body_bytes = hyper::body::to_bytes(context.request.body_mut()).await?;
 
-    let data: GiteeRequest = json5::from_str(&String::from_utf8(body_bytes.into_iter().collect()).expect("")).unwrap();
+    let data: GiteeRequest =
+        json5::from_str(&String::from_utf8(body_bytes.into_iter().collect())?)?;
 
     tokio::spawn(async move {
-        let config = get_config();
+        let config = get_config().unwrap();
         for item in config.sites.gitee {
             if !item.name.is_empty() && item.name != data.project.path_with_namespace {
                 continue;
