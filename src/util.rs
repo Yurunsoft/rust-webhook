@@ -38,7 +38,7 @@ pub async fn shell_exec_ex(cmd: &str, args: &[&str]) -> anyhow::Result<ExitStatu
         args_vec.push("-c");
         "sh"
     };
-    let cmd = cmd.to_string() + " " + &args.join(" ");
+    let cmd = format!("{} {}", cmd, args.join(" "));
     args_vec.push(cmd.as_str());
     Ok(exec_ex(shell, args_vec.as_ref()).await?)
 }
